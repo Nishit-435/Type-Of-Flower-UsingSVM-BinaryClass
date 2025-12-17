@@ -3,7 +3,13 @@ import pandas as pd
 import numpy as np
 import joblib
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
+uri = "mongodb+srv://nishitdb:Cnd_Cdr_423#152@cluster0.7opr5pi.mongodb.net/?appName=Cluster0"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['SVM']
+collection = db['Type_Of_Flower_SVM_Binary']
 
 def load_model():
     with open("svm_binary.pkl" , "rb") as file:
@@ -47,6 +53,9 @@ def main():
             1 : "versicolor"
         }
         st.success(f"Type Of Flower Is :- {type_of_flower[prediction_type]}")
-
+        
+        user_data['prediction'] = type_of_flower[prediction_type]
+        collection.insert_one(user_data)
+        
 if __name__ == "__main__":
     main()
